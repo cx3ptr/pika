@@ -1143,11 +1143,7 @@ void ConfigCmd::ConfigGet(std::string &ret) {
     ret = "*2\r\n";
     EncodeString(&ret, "binlog-file-size");
     EncodeInt32(&ret, g_pika_conf->binlog_file_size());
-  } else if (get_item == "identify-binlog-type") {
-    ret = "*2\r\n";
-    EncodeString(&ret, "identify-binlog-type");
-    EncodeString(&ret, g_pika_conf->identify_binlog_type());
-  } else if (get_item == "compression") {
+  }  else if (get_item == "compression") {
     ret = "*2\r\n";
     EncodeString(&ret, "compression");
     EncodeString(&ret, g_pika_conf->compression());
@@ -1260,7 +1256,6 @@ void ConfigCmd::ConfigGet(std::string &ret) {
     EncodeString(&ret, "binlog-file-size");
     EncodeInt32(&ret, g_pika_conf->binlog_file_size());
     EncodeString(&ret, "identify-binlog-type");
-    EncodeString(&ret, g_pika_conf->identify_binlog_type());
     EncodeString(&ret, "compression");
     EncodeString(&ret, g_pika_conf->compression());
     EncodeString(&ret, "db-sync-path");
@@ -1430,18 +1425,6 @@ void ConfigCmd::ConfigSet(std::string& ret) {
     }
     g_pika_conf->SetSlaveReadOnly(is_readonly);
     ret = "+OK\r\n";
-  } else if (set_item == "identify-binlog-type") {
-    int role = g_pika_server->role();
-    if (role == PIKA_ROLE_SLAVE || role == PIKA_ROLE_DOUBLE_MASTER) {
-      ret = "-ERR need to close master-slave or double-master mode first\r\n";
-      return;
-    } else if (value != "new" && value != "old") {
-      ret = "-ERR invalid identify-binlog-type (new or old)\r\n";
-      return;
-    } else {
-      g_pika_conf->SetIdentifyBinlogType(value);
-      ret = "+OK\r\n";
-    }
   } else if (set_item == "write-binlog") {
     int role = g_pika_server->role();
     if (role == PIKA_ROLE_SLAVE || role == PIKA_ROLE_DOUBLE_MASTER) {
